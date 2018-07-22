@@ -1,4 +1,4 @@
-    #!/usr/bin/python
+#    #!/usr/bin/python
 #flowsensor.py
 import RPi.GPIO as GPIO
 import time, sys
@@ -8,9 +8,10 @@ import simplejson
 import json
 from gpiozero import LED
 
-led4 = LED(4)
-
 FLOW_SENSOR = 22
+
+led4 = LED(2)
+led4.on()
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(FLOW_SENSOR, GPIO.IN, pull_up_down = GPIO.PUD_UP)
@@ -35,15 +36,17 @@ while True:
         start_counter = 0
         flow = (count * 60 * 2.25 / 1000)
         print "The flow is: %.3f Liter/min" % (flow)
-        url = "https://guna.jagopesan.com/conditions/volume"
+        #url = "https://guna.jagopesan.com/conditions/volume"
+	url = "http://192.168.43.69:3042/conditions/volume"
 	#params = {"volume":flow}
         rsp = requests.get(url)
 	data = rsp.json()
-	print data
-	if flow >= data['volume']
-		led4.off()
+	ubah = float(data['volume']) / 1000
+	print ubah
+	if flow >= ubah:
+		led4.on()
         count = 0
-        time.sleep(2)
+        time.sleep(1)
     except KeyboardInterrupt:
         print '\ncaught keyboard interrupt!, bye'
         GPIO.cleanup()
